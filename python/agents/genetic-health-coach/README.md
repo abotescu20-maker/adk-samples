@@ -69,6 +69,23 @@ python/agents/genetic-health-coach/
    dacă este necesar, furnizați și credențiale ori un director în care să fie plasat
    fișierul.
 
+## Demonstrație web locală
+
+Pentru a testa rapid agentul într-o interfață web accesibilă prin link local,
+porniți serverul HTTP inclus în proiect (nu sunt necesare dependențe externe):
+
+```bash
+cd python/agents/genetic-health-coach
+poetry install
+poetry run python -m genetic_health_coach.webapp
+```
+
+Apoi deschideți în browser adresa [http://localhost:8000](http://localhost:8000).
+Pagina vă permite să încărcați un fișier VCF (puteți folosi exemplul din
+`sample_data/example_annotated.vcf`), să bifați temele dorite și să generați
+raportul direct din navigator. Pentru integrare automată, endpoint-ul `POST
+`/api/analyze` întoarce același rezultat în format JSON.
+
 ## Testare
 
 Pachetul include teste unitare pentru instrumentele de parsare și pentru generarea
