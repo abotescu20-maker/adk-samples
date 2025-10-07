@@ -10,6 +10,7 @@ import pytest
 root_dir = Path(__file__).resolve().parents[1]
 sys.path.append(str(root_dir))
 
+from genetic_health_coach.tools.persistence import persist_report
 from genetic_health_coach.tools.subject_analysis import build_subject_report
 from genetic_health_coach.tools.vcf_parser import extract_gene_variants
 
@@ -49,3 +50,16 @@ def test_build_subject_report(subject: str, expected_gene: str, sample_vcf_path:
     assert report["subject"] == subject
     assert any(entry["gene"] == expected_gene for entry in report["entries"])
     assert report["recommendations"], "Recomandările nu ar trebui să fie goale pentru genele cunoscute."
+
+
+def test_persist_report_local(tmp_path: Path) -> None:
+    destination = tmp_path / "rapoarte" / "rezultat.txt"
+    message = persist_report(content="Salut", destination=str(destination))
+
+    assert destination.read_text() == "Salut"
+    assert str(destination) in message
+
+
+def test_persist_report_invalid_scheme() -> None:
+    with pytest.raises(ValueError):
+        persist_report(content="Salut", destination="s3://bucket/raport.txt")

@@ -15,7 +15,9 @@ def get_instruction() -> str:
            furnizat și pentru a obține toate genele și mutațiile identificate.
         2. Pentru fiecare subiect solicitat (sport, nutriție, terapii), utilizează datele
            genetice extrase pentru a înțelege impactul potențial. Dacă ai nevoie de
-           sugestii structurate, folosește instrumentul `build_subject_report`.
+           sugestii structurate, folosește instrumentul `build_subject_report`. Dacă
+           utilizatorul dorește să salvezi rezultatul, apelează și instrumentul
+           `persist_report` specificând calea locală sau URL-ul FTP dorit.
         3. Pentru fiecare subiect, oferă un raport în formatul fix de mai jos:
 
            Subiect: <numele subiectului>

@@ -10,6 +10,8 @@ nutriție și terapii pe baza mutațiilor identificate.
   principale (impact, efecte, genotip, HGVS).
 * Construiește rapoarte tematice (sport, nutriție, terapii) ce includ argumentație și
   recomandări adaptate pentru genele identificate.
+* Poate salva rapoartele rezultate local sau pe un server FTP prin intermediul
+  instrumentului `persist_report`.
 * Oferă un format de răspuns standardizat în limba română, cu raționament înaintea
   recomandărilor, conform cerințelor din enunț.
 
@@ -54,7 +56,18 @@ python/agents/genetic-health-coach/
    O conversație tipică poate începe cu un prompt de genul:
 
    > Analizează fișierul `sample_data/example_annotated.vcf` și generează un raport pentru
-   > sport, nutriție și terapii.
+   > sport, nutriție și terapii. Salvează rezultatul în `rapoarte/analiza.txt`.
+
+4. Pentru a persista ieșirea, indicați în conversație calea locală sau URL-ul FTP
+   dorit, de exemplu:
+
+   ```text
+   Te rog salvează raportul în `~/rapoarte/genetic_health.txt`.
+   ```
+
+   Pentru FTP, specificați un URL de forma `ftp://exemplu.ro/rapoarte/raport.txt` și,
+   dacă este necesar, furnizați și credențiale ori un director în care să fie plasat
+   fișierul.
 
 ## Testare
 
