@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  demo:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      GENETIC_HEALTH_COACH_HOST: 0.0.0.0
+      GENETIC_HEALTH_COACH_PORT: 8000
+    volumes:
+      - ./sample_data:/app/sample_data:ro
+    restart: unless-stopped

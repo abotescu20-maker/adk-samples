@@ -93,6 +93,26 @@ rezultat în format JSON.
 > * Pentru a oferi acces altor dispozitive din aceeași rețea, porniți serverul cu `poetry run genetic-health-coach-demo --host 0.0.0.0 --port 8000` și accesați apoi linkul afișat în terminal.
 > * Variabilele de mediu `GENETIC_HEALTH_COACH_HOST` și `GENETIC_HEALTH_COACH_PORT` pot fi folosite pentru a seta implicit hostul și portul atunci când porniți serverul.
 
+### Sandbox rapid cu Docker
+
+Dacă nu doriți să instalați dependențele local, în directorul proiectului este
+disponibil un fișier `Dockerfile` împreună cu `docker-compose.yml` care
+pregătesc un mediu de testare complet funcțional. Pașii sunt:
+
+```bash
+cd python/agents/genetic-health-coach
+docker compose up --build
+```
+
+Comanda va construi imaginea, va instala automat dependențele și va porni
+serverul demo pe portul 8000. Accesați apoi
+[http://localhost:8000](http://localhost:8000) pentru a încărca propriile fișiere
+VCF sau pentru a folosi exemplul inclus (`sample_data/example_annotated.vcf`).
+Containerul montează directorul `sample_data/` în modul read-only, astfel încât
+datele de test să fie la îndemână fără configurări suplimentare. Pentru a opri
+mediul de testare, folosiți `Ctrl+C` sau rulați `docker compose down` într-un
+terminal separat.
+
 ## Testare
 
 Pachetul include teste unitare pentru instrumentele de parsare și pentru generarea
