@@ -15,6 +15,7 @@ from genetic_health_coach.webapp import (
     _parse_args,
     build_reports_from_bytes,
     render_full_page,
+    render_gene_summary,
     render_subject_html,
 )
 
@@ -46,6 +47,9 @@ def test_build_reports_from_bytes_generates_subjects() -> None:
     assert "nutriție" in subjects
     fragment = render_subject_html(reports["subjects"][0])
     assert "Recomandări" in fragment
+    summary = render_gene_summary(reports["gene_summary"])
+    assert "Gene identificate" in summary
+    assert "MTHFR" in summary
 
 
 def test_http_server_serves_homepage_and_api() -> None:
@@ -87,6 +91,17 @@ def test_http_server_serves_homepage_and_api() -> None:
     finally:
         server.shutdown()
         server.server_close()
+
+
+def test_render_subject_html_mentions_irrelevant_genes() -> None:
+    report = {
+        "subject": "sport",
+        "entries": [],
+        "irrelevant_genes": ["ESR1", "CYP19A1"],
+    }
+    fragment = render_subject_html(report)
+    assert "ESR1" in fragment
+    assert "nu există încă reguli dedicate" in fragment
 
 
 def test_parse_args_accepts_host_and_port(monkeypatch) -> None:

@@ -54,7 +54,17 @@ def render_subject_html(report: dict[str, object]) -> str:
     subject_key = str(report.get("subject", ""))
     title = AVAILABLE_SUBJECTS.get(subject_key, subject_key.capitalize())
     entries: Sequence[dict[str, object]] = list(report.get("entries") or [])  # type: ignore[arg-type]
+    irrelevant_genes: Sequence[str] = list(report.get("irrelevant_genes") or [])  # type: ignore[arg-type]
     if not entries:
+        if irrelevant_genes:
+            missing = ", ".join(html.escape(g) for g in irrelevant_genes)
+            return (
+                f"<article><h2>Subiect: {html.escape(title)}</h2>"
+                f"<p><strong>Gene analizate:</strong> {missing}</p>"
+                "<p><em>Pentru genele de mai sus nu există încă reguli dedicate în agent. "
+                "Personalizează baza de cunoștințe pentru recomandări specifice.</em></p>"
+                "</article>"
+            )
         return (
             f"<article><h2>Subiect: {html.escape(title)}</h2>"
             "<p><em>Nu au fost găsite gene relevante pentru acest subiect.</em></p></article>"
@@ -88,11 +98,62 @@ def render_subject_html(report: dict[str, object]) -> str:
         f"<li>{html.escape(rec)}</li>" for rec in recommendations if rec
     ) or "<li>Nu au fost generate recomandări specifice.</li>"
 
+    extra_note = ""
+    if irrelevant_genes:
+        extra_note = (
+            "<p><em>Gene suplimentare identificate fără reguli dedicate: "
+            + ", ".join(html.escape(g) for g in irrelevant_genes)
+            + "</em></p>"
+        )
+
     return (
         f"<article><h2>Subiect: {html.escape(title)}</h2>"
         f"<p><strong>Gene/mutații relevante:</strong> {gene_section}</p>"
         f"<p><strong>Argumentare:</strong> {html.escape(argument_block)}</p>"
-        f"<h3>Recomandări</h3><ul>{recommendation_items}</ul></article>"
+        f"<h3>Recomandări</h3><ul>{recommendation_items}</ul>{extra_note}</article>"
+    )
+
+
+def render_gene_summary(gene_payload: dict[str, object]) -> str:
+    """Return an HTML fragment summarising all detected genes."""
+
+    genes: Sequence[dict[str, object]] = list(gene_payload.get("genes") or [])  # type: ignore[arg-type]
+    if not genes:
+        return (
+            "<section><h2>Gene identificate</h2><p><em>Nu au fost detectate variante în fișierul VCF.</em></p></section>"
+        )
+
+    items: list[str] = []
+    for entry in genes:
+        gene = html.escape(str(entry.get("gene", "")))
+        variants: Sequence[dict[str, object]] = list(entry.get("variants") or [])  # type: ignore[arg-type]
+        count = entry.get("variant_count") or len(variants)
+        variant_descriptions: list[str] = []
+        for variant in variants:
+            chrom = variant.get("chrom")
+            position = variant.get("position")
+            ref = variant.get("ref")
+            alt = variant.get("alt")
+            effects = "/".join(variant.get("effects") or [])
+            location = f"{chrom}:{position}" if chrom and position else "Locus nespecificat"
+            change = f"{ref}>{alt}" if ref and alt else ""
+            pieces = [location]
+            if change:
+                pieces.append(change)
+            if effects:
+                pieces.append(effects)
+            variant_descriptions.append(" – ".join(pieces))
+        details = "<br>".join(html.escape(text) for text in variant_descriptions if text)
+        items.append(
+            "<li><strong>{gene}</strong> – {count} variantă/variante".format(gene=gene, count=count)
+            + (f"<br>{details}" if details else "")
+            + "</li>"
+        )
+
+    return (
+        "<section><h2>Gene identificate</h2><ul>"
+        + "".join(items)
+        + "</ul></section>"
     )
 
 
@@ -246,8 +307,9 @@ class DemoRequestHandler(BaseHTTPRequestHandler):
             self._send(HTTPStatus.OK, body, "application/json; charset=utf-8")
             return
 
+        summary_html = render_gene_summary(reports["gene_summary"])
         rendered_sections = "".join(render_subject_html(report) for report in reports["subjects"])
-        document = render_full_page(f"<h2>Rezultate</h2>{rendered_sections}")
+        document = render_full_page(f"<h2>Rezultate</h2>{summary_html}{rendered_sections}")
         self._send(HTTPStatus.OK, document.encode("utf-8"), "text/html; charset=utf-8")
 
 
@@ -275,6 +337,7 @@ def run_demo_server(host: str = "127.0.0.1", port: int = 8000) -> ThreadingHTTPS
 __all__ = [
     "DemoRequestHandler",
     "build_reports_from_bytes",
+    "render_gene_summary",
     "render_full_page",
     "render_subject_html",
     "run_demo_server",
