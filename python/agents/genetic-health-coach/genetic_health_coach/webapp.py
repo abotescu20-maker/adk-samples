@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import argparse
 import cgi
 import html
 import json
 import os
+import sys
 import tempfile
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -253,7 +255,13 @@ def run_demo_server(host: str = "127.0.0.1", port: int = 8000) -> ThreadingHTTPS
     """Start the demo HTTP server and return the server instance."""
 
     server = ThreadingHTTPServer((host, port), DemoRequestHandler)
-    print(f"Serverul rulează pe http://{host}:{port}")
+    if host in {"0.0.0.0", "::"}:
+        display_host = "localhost"
+    else:
+        display_host = host
+    print(f"Serverul rulează pe http://{display_host}:{port}")
+    if host in {"0.0.0.0", "::"}:
+        print("Serverul acceptă conexiuni de la alte dispozitive din rețea.")
     print("Apasă Ctrl+C pentru a opri.")
     try:
         server.serve_forever()
@@ -270,8 +278,36 @@ __all__ = [
     "render_full_page",
     "render_subject_html",
     "run_demo_server",
+    "_parse_args",
+    "main",
 ]
 
 
+def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
+    """Parse CLI arguments for the demo server."""
+
+    parser = argparse.ArgumentParser(description="Pornește serverul demo Genetic Health Coach.")
+    parser.add_argument(
+        "--host",
+        default=os.environ.get("GENETIC_HEALTH_COACH_HOST", "127.0.0.1"),
+        help="Adresa pe care ascultă serverul (implicit 127.0.0.1).",
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=int(os.environ.get("GENETIC_HEALTH_COACH_PORT", "8000")),
+        help="Portul pe care ascultă serverul (implicit 8000).",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    """CLI entry point for launching the demo server."""
+
+    args = _parse_args(argv)
+    run_demo_server(args.host, args.port)
+    return 0
+
+
 if __name__ == "__main__":  # pragma: no cover - manual usage
-    run_demo_server()
+    sys.exit(main())

@@ -12,6 +12,7 @@ from http.server import ThreadingHTTPServer
 
 from genetic_health_coach.webapp import (
     DemoRequestHandler,
+    _parse_args,
     build_reports_from_bytes,
     render_full_page,
     render_subject_html,
@@ -86,3 +87,19 @@ def test_http_server_serves_homepage_and_api() -> None:
     finally:
         server.shutdown()
         server.server_close()
+
+
+def test_parse_args_accepts_host_and_port(monkeypatch) -> None:
+    monkeypatch.delenv("GENETIC_HEALTH_COACH_HOST", raising=False)
+    monkeypatch.delenv("GENETIC_HEALTH_COACH_PORT", raising=False)
+    args = _parse_args(["--host", "0.0.0.0", "--port", "9000"])
+    assert args.host == "0.0.0.0"
+    assert args.port == 9000
+
+
+def test_parse_args_uses_environment_defaults(monkeypatch) -> None:
+    monkeypatch.setenv("GENETIC_HEALTH_COACH_HOST", "::")
+    monkeypatch.setenv("GENETIC_HEALTH_COACH_PORT", "8100")
+    args = _parse_args([])
+    assert args.host == "::"
+    assert args.port == 8100

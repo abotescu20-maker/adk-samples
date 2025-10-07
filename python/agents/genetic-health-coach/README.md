@@ -77,7 +77,7 @@ porniți serverul HTTP inclus în proiect (nu sunt necesare dependențe externe)
 ```bash
 cd python/agents/genetic-health-coach
 poetry install
-poetry run python -m genetic_health_coach.webapp
+poetry run genetic-health-coach-demo
 ```
 
 Apoi deschideți în browser adresa [http://localhost:8000](http://localhost:8000).
@@ -85,6 +85,10 @@ Pagina vă permite să încărcați un fișier VCF (puteți folosi exemplul din
 `sample_data/example_annotated.vcf`), să bifați temele dorite și să generați
 raportul direct din navigator. Pentru integrare automată, endpoint-ul `POST
 `/api/analyze` întoarce același rezultat în format JSON.
+
+> Sfaturi:
+> * Pentru a oferi acces altor dispozitive din aceeași rețea, porniți serverul cu `poetry run genetic-health-coach-demo --host 0.0.0.0 --port 8000` și accesați apoi linkul afișat în terminal.
+> * Variabilele de mediu `GENETIC_HEALTH_COACH_HOST` și `GENETIC_HEALTH_COACH_PORT` pot fi folosite pentru a seta implicit hostul și portul atunci când porniți serverul.
 
 ## Testare
 
