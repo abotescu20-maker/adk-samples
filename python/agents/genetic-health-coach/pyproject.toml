@@ -26,6 +26,7 @@ pytest-asyncio = "^0.26.0"
 
 [tool.poetry.scripts]
 genetic-health-coach-demo = "genetic_health_coach.webapp:main"
+genetic-health-coach-report = "genetic_health_coach.cli:main"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

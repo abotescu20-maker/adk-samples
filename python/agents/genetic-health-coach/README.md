@@ -58,7 +58,22 @@ python/agents/genetic-health-coach/
    > Analizează fișierul `sample_data/example_annotated.vcf` și generează un raport pentru
    > sport, nutriție și terapii. Salvează rezultatul în `rapoarte/analiza.txt`.
 
-4. Pentru a persista ieșirea, indicați în conversație calea locală sau URL-ul FTP
+4. Pentru o rulare completă direct din terminal (fără interfață web sau dialog cu agentul),
+   folosiți scriptul CLI inclus în pachet:
+
+   ```bash
+   cd python/agents/genetic-health-coach
+   poetry run genetic-health-coach-report sample_data/example_annotated.vcf
+   ```
+
+   Veți obține în consolă rapoartele pentru sport, nutriție și terapii în formatul cerut
+   (raționament urmat de recomandări). Puteți filtra subiectele cu `-s/--subject` (de ex.
+   `--subject sport --subject nutritie`), comuta ieșirea în JSON cu `--json` sau salva
+   rezultatul într-un fișier folosind `--output cale/raport.txt` (directoarele se creează
+   automat). Comanda `poetry run genetic-health-coach-report --list-subjects` afișează
+   lista completă de subiecte acceptate.
+
+5. Pentru a persista ieșirea, indicați în conversație calea locală sau URL-ul FTP
    dorit, de exemplu:
 
    ```text

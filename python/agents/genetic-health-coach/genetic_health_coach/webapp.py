@@ -14,38 +14,9 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Iterable, List, Sequence
 
+from .subjects import AVAILABLE_SUBJECTS, SUBJECT_SYNONYMS, normalise_subjects
 from .tools.subject_analysis import build_subject_report
 from .tools.vcf_parser import extract_gene_variants
-
-AVAILABLE_SUBJECTS = {
-    "sport": "Sport",
-    "nutriție": "Nutriție",
-    "terapii": "Terapii",
-}
-
-SUBJECT_SYNONYMS = {
-    "nutritie": "nutriție",
-    "terapie": "terapii",
-}
-
-
-def _normalise_subjects(subjects: Iterable[str] | None) -> List[str]:
-    normalised: List[str] = []
-    if not subjects:
-        return ["sport", "nutriție", "terapii"]
-    for subject in subjects:
-        if not subject:
-            continue
-        key = subject.strip().lower()
-        if key in AVAILABLE_SUBJECTS:
-            canonical = key
-        else:
-            canonical = SUBJECT_SYNONYMS.get(key, key)
-        if canonical not in ("sport", "nutriție", "terapii"):
-            continue
-        if canonical not in normalised:
-            normalised.append(canonical)
-    return normalised or ["sport", "nutriție", "terapii"]
 
 
 def render_subject_html(report: dict[str, object]) -> str:
@@ -160,7 +131,7 @@ def render_gene_summary(gene_payload: dict[str, object]) -> str:
 def _build_reports(vcf_path: Path, subjects: Iterable[str]) -> dict[str, object]:
     gene_payload = extract_gene_variants(str(vcf_path))
     subject_reports = [
-        build_subject_report(subject, gene_payload) for subject in _normalise_subjects(subjects)
+        build_subject_report(subject, gene_payload) for subject in normalise_subjects(subjects)
     ]
     return {
         "vcf_path": str(vcf_path),
