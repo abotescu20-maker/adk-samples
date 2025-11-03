@@ -32,6 +32,46 @@ The agent:
 > provide medical advice. Always consult a licensed professional before making
 > health decisions based on genetic information.
 
+## Quickstart Commands
+
+Follow the sequence that matches how you want to experiment with the agent. In
+both cases start from a terminal that is already inside the project folder:
+
+```bash
+cd adk-samples/python/agents/nutrigenomics-rag
+```
+
+### Local ADK run (Vertex AI backend)
+
+```bash
+cp .env.example .env               # fill in Vertex AI variables after copying
+poetry install                     # set up the virtual environment
+poetry run adk run nutrigenomics_rag
+```
+
+### Streamlit UI with OpenAI API
+
+```bash
+cp .env.example .env               # add OPENAI_API_KEY and related values
+poetry install --with streamlit_runner
+poetry run python streamlit_runner/longevity_assistant.py
+```
+
+### Docker container (Vertex AI backend)
+
+```bash
+cp .env.example .env               # include GOOGLE_CLOUD_PROJECT, RAG_CORPUS, etc.
+docker build -t nutrigenomics-rag .
+docker run -it --env-file .env \
+  -v "$PWD/gcloud-key.json:/gcloud/key.json:ro" \
+  -e GOOGLE_APPLICATION_CREDENTIALS=/gcloud/key.json \
+  nutrigenomics-rag
+```
+
+Each block includes every command needed to get to a running assistant for that
+workflow. Review the detailed sections below if you need extra context or
+troubleshooting tips.
+
 ## Agent Details
 
 | Attribute             | Details |
