@@ -72,6 +72,23 @@ Each block includes every command needed to get to a running assistant for that
 workflow. Review the detailed sections below if you need extra context or
 troubleshooting tips.
 
+## Export or Download the Agent Bundle
+
+If you want a single archive that you can transfer to another machine (for
+example, to upload directly into Google AI Studio or keep as a backup), use the
+packaging helper inside this folder:
+
+```bash
+cd adk-samples/python/agents/nutrigenomics-rag
+python3 tools/export_bundle.py
+```
+
+The script creates `nutrigenomics_agent_bundle.zip` alongside the project. Pass
+`--output /path/to/name` if you want to place the archive somewhere else. The
+zip contains the Dockerfile, README, agent sources, Streamlit runner, tests, and
+environment template so you can download or share the entire agent with a
+single file.
+
 ## Agent Details
 
 | Attribute             | Details |
