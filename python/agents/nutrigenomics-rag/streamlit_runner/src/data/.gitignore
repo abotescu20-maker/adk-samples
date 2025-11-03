@@ -1,0 +1,3 @@
+# Ignore uploaded documents and vector store artifacts
+*
+!/.gitignore
